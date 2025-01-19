@@ -74,17 +74,25 @@ export const connectWallet = async () => {
 };
 
 // ฟังก์ชันตัดการเชื่อมต่อกระเป๋า
-export const disconnectWallet = (setCurrentAccount, setContractInstance, setTotalSupply, setWeb3) => {
-  // รีเซ็ตสถานะของบัญชีและ contract instance
+export const disconnectWallet = (setCurrentAccount, setContractInstance, setTotalSupply) => {
+  // รีเซ็ตค่าต่าง ๆ ใน state
   setCurrentAccount(null);
   setContractInstance(null);
-  setTotalSupply(null);  // รีเซ็ตจำนวน NFTs ที่ถูก mint
-  setWeb3(null);  // รีเซ็ตการเชื่อมต่อ Web3
+  setTotalSupply(null);
 
-  // แสดงข้อความว่าตัดการเชื่อมต่อสำเร็จ
-  console.log("Wallet disconnected.");
+  // ลบข้อมูลจาก localStorage
+  localStorage.removeItem("connectedAccount");
+  localStorage.removeItem("web3");
 
+  // ลบ Listener ที่เคยเพิ่มไว้
+  if (window.ethereum?.removeAllListeners) {
+    window.ethereum.removeAllListeners("accountsChanged");
+    window.ethereum.removeAllListeners("chainChanged");
+  }
+
+  console.log("Wallet disconnected. Please manually disconnect from MetaMask if needed.");
 };
+
 
 // ฟังก์ชันดึงข้อมูลจำนวน NFT ที่ mint ไปแล้ว
 export const getTotalSupply = async (contractInstance) => {
